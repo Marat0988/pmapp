@@ -1,54 +1,78 @@
 package com.ayupovmi.pmapp.rest;
 
-import com.ayupovmi.pmapp.model.Task;
-import com.ayupovmi.pmapp.model.TaskDto;
+import com.ayupovmi.pmapp.rest.dto.TaskRequestDto;
+import com.ayupovmi.pmapp.rest.dto.TaskResponseDto;
 import com.ayupovmi.pmapp.service.TaskService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 
-@Tag(name = "Контроллер для задач", description = "Позволяет создать, получить или удалить по id задачу")
+
+@Tag(name = "Задачи", description = "Позволяет создать, получить или удалить по id задачи")
 @RestController
 @RequestMapping("/api/v1/tasks/")
-@ResponseStatus
+
 public class TaskController {
 
-    @Autowired
     private TaskService taskService;
+    public TaskController (TaskService taskService) {this.taskService = taskService;}
     //get
-    @Tag(name = "Метод контроллера для получения задачи", description = "Позволяет получить по id задачу")
-    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TaskDto>getTaskDto(@PathVariable("id") Long taskDtoId){
-        if(taskDtoId == null){
-            return new ResponseEntity<TaskDto>(HttpStatus.BAD_REQUEST);
-        }
-        TaskDto taskDto = taskService.getById(taskDtoId);
-         return new ResponseEntity<TaskDto>(taskDto, HttpStatus.OK);
+    @Operation(description = "Позволяет получить по id задачу")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TaskResponseDto> getTask(@PathVariable (required = false) Long taskId,
+                                                         @RequestBody TaskRequestDto taskRequestDto){
+        if(taskId != null){
+            TaskResponseDto taskResponseDto = taskService.getById(taskId);
+            return ResponseEntity.ok().body(taskResponseDto);
+        } else {
+            return new ResponseEntity<TaskResponseDto>(HttpStatus.BAD_REQUEST);}
     }
     //post
-    @Tag(name = "Метод контроллера для создания задачи", description = "Позволяет создать задачу")
-    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TaskDto> saveTaskDto  (@RequestBody @Validated  TaskDto taskDto){
-        if(taskDto == null){
-            return new ResponseEntity<TaskDto>(HttpStatus.BAD_REQUEST);
-        }
-        this.taskService.save(taskDto);
-        return new ResponseEntity<TaskDto>(taskDto, HttpStatus.CREATED);
+    @Operation(description = "Позволяет создать задачу")
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TaskResponseDto> saveTask(@RequestBody TaskRequestDto taskRequestDto){
+        TaskResponseDto taskResponseDto = taskService.save(taskRequestDto);
+        return ResponseEntity.ok().body(taskResponseDto);
     }
     //delete
-    @Tag(name = "Метод контроллера для удаления задачи", description = "Позволяет удалить по id задачу")
-    @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<TaskDto> deleteTaskDto(@PathVariable("id") Long id){
-        TaskDto taskDto = this.taskService.getById(id);
-        if(taskDto == null){
-            return new ResponseEntity<TaskDto>(HttpStatus.NOT_FOUND);
+    @Operation(description = "Позволяет удалить по id задачу")
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TaskResponseDto> deleteTask(@PathVariable (required = false) Long taskId,
+                                                            @RequestBody TaskRequestDto taskRequestDto){
+        TaskResponseDto taskResponseDto = this.taskService.getById(taskId);
+        if(taskResponseDto != null){
+            this.taskService.delete(taskId);
+            return ResponseEntity.ok().build();
         }
-        this.taskService.delete(id);
-        return new ResponseEntity<TaskDto>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<TaskResponseDto>(HttpStatus.NOT_FOUND);
     }
+    //update
+    @Operation(description = "Позволяет обновить по id задачу")
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TaskResponseDto> updateTask(@PathVariable (required = false) Long taskId,
+                                                            @RequestBody TaskRequestDto taskRequestDto){
+
+        if(taskId != null){
+            TaskResponseDto taskResponseDto = taskService.save(taskRequestDto);
+            return ResponseEntity.ok().body(taskResponseDto);
+        }
+        return new ResponseEntity<TaskResponseDto>(HttpStatus.NOT_FOUND);
+    }
+
+    //get all
+    @Operation(description = "Позволяет получить список всех задач")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<TaskResponseDto>> getAllTasks () {
+        List<TaskResponseDto> taskResponseDtoList = taskService.getAll();
+        if (taskResponseDtoList.isEmpty()) {return new ResponseEntity<List<TaskResponseDto>>(HttpStatus.NOT_FOUND);}
+        return ResponseEntity.ok().body(taskResponseDtoList);
+
+
+    }
+
 }

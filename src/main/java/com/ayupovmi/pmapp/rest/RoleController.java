@@ -1,52 +1,75 @@
 package com.ayupovmi.pmapp.rest;
 
-import com.ayupovmi.pmapp.model.Role;
+import com.ayupovmi.pmapp.rest.dto.RoleRequestDto;
+import com.ayupovmi.pmapp.rest.dto.RoleResponseDto;
 import com.ayupovmi.pmapp.service.RoleService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Контроллер для ролей пользователей", description = "Позволяет создать, получить или удалить по id роли пользователей")
+import java.util.List;
+
+@Tag(name = "роли пользователей", description = "Позволяет создать, получить или удалить по id роли пользователей")
 @RestController
 @RequestMapping("/api/v1/roles/")
-@ResponseStatus
+
 public class RoleController {
-    @Autowired
     private RoleService roleService;
+    public RoleController (RoleService roleService) {this.roleService = roleService;}
     //get
-    @Tag(name = "Метод контроллера для получения роли", description = "Позволяет получить по id роль пользователя")
-    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Role> getTask(@PathVariable("id") Long roleId){
-        if(roleId == null){
-            return new ResponseEntity<Role>(HttpStatus.BAD_REQUEST);
-        }
-        Role role = roleService.getById(roleId);
-        return new ResponseEntity<Role>(role, HttpStatus.OK);
+    @Operation(description = "Позволяет получить по id роль пользователя")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RoleResponseDto> getRole(@PathVariable (required = false) Long roleId,
+                                                   @RequestBody RoleRequestDto roleRequestDto){
+        if(roleId != null){
+            RoleResponseDto roleResponseDto = roleService.getById(roleId);
+            return ResponseEntity.ok().body(roleResponseDto);
+        } else {
+            return new ResponseEntity<RoleResponseDto>(HttpStatus.BAD_REQUEST);}
     }
     //post
-    @Tag(name = "Метод контроллера для создания роли", description = "Позволяет создать роль пользователя")
-    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Role> saveRole(@RequestBody @Validated Role role){
-        if(role == null){
-            return new ResponseEntity<Role>(HttpStatus.BAD_REQUEST);
-        }
-        this.roleService.save(role);
-        return new ResponseEntity<Role>(role, HttpStatus.CREATED);
+    @Operation(description = "Позволяет создать роль пользователя")
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RoleResponseDto> saveRole(@RequestBody RoleRequestDto roleRequestDto){
+        RoleResponseDto roleResponseDto = roleService.save(roleRequestDto);
+        return ResponseEntity.ok().body(roleResponseDto);
     }
     //delete
-    @Tag(name = "Метод контроллера для удаления роли", description = "Позволяет удалить по id роль пользователя")
-    @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Role> deleteRole(@PathVariable("id") Long id){
-        Role role = this.roleService.getById(id);
-        if(role == null){
-            return new ResponseEntity<Role>(HttpStatus.NOT_FOUND);
+    @Operation(description = "Позволяет удалить по id роль пользователя")
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RoleResponseDto> deleteRole(@PathVariable (required = false) Long roleId,
+                                                      @RequestBody RoleRequestDto roleRequestDto){
+        RoleResponseDto roleResponseDto = this.roleService.getById(roleId);
+        if(roleResponseDto != null){
+            this.roleService.delete(roleId);
+            return ResponseEntity.ok().build();
         }
-        this.roleService.delete(id);
-        return new ResponseEntity<Role>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<RoleResponseDto>(HttpStatus.NOT_FOUND);
+    }
+    //update
+    @Operation(description = "Позволяет обновить по id роль пользователя")
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<RoleResponseDto> updateRole(@PathVariable (required = false) Long roleId,
+                                                      @RequestBody RoleRequestDto roleRequestDto){
+
+        if(roleId != null){
+            RoleResponseDto roleResponseDto = roleService.save(roleRequestDto);
+            return ResponseEntity.ok().body(roleResponseDto);
+        }
+        return new ResponseEntity<RoleResponseDto>(HttpStatus.NOT_FOUND);
+    }
+
+    //get all
+    @Operation(description = "Позволяет получить список всех ролей пользователей")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<RoleResponseDto>> getAllRoles () {
+        List<RoleResponseDto> roleResponseDtoList = roleService.getAll();
+        if (roleResponseDtoList.isEmpty()) {return new ResponseEntity<List<RoleResponseDto>>(HttpStatus.NOT_FOUND);}
+        return ResponseEntity.ok().body(roleResponseDtoList);
+
     }
 
 }

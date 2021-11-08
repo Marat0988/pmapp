@@ -1,53 +1,76 @@
 package com.ayupovmi.pmapp.rest;
 
 
-import com.ayupovmi.pmapp.model.Status;
+import com.ayupovmi.pmapp.rest.dto.StatusReponseDto;
+import com.ayupovmi.pmapp.rest.dto.StatusRequestDto;
 import com.ayupovmi.pmapp.service.StatusService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Контроллер для  статусов", description = "Позволяет создать, получить или удалить по id статусы")
+import java.util.List;
+
+@Tag(name = "Статусы задач", description = "Позволяет создать, получить или удалить по id статусы")
 @RestController
 @RequestMapping("/api/v1/statuses/")
-@ResponseStatus
+
 public class StatusController {
 
-    @Autowired
     private StatusService statusService;
+    public StatusController (StatusService statusService) {this.statusService = statusService;}
     //get
-    @Tag(name = "Метод контроллера для получения статуса", description = "Позволяет получить по id статус")
-    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Status> getStatus(@PathVariable("id") Long statusId){
-        if(statusId == null){
-            return new ResponseEntity<Status>(HttpStatus.BAD_REQUEST);
-        }
-        Status status = statusService.getById(statusId);
-        return new ResponseEntity<Status>(status, HttpStatus.OK);
+    @Operation(description = "Позволяет получить по id статус пользователя")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StatusReponseDto> getStatus(@PathVariable (required = false) Long statusId,
+                                                    @RequestBody StatusRequestDto statusRequestDto){
+        if(statusId != null){
+            StatusReponseDto statusReponseDto = statusService.getById(statusId);
+            return ResponseEntity.ok().body(statusReponseDto);
+        } else {
+            return new ResponseEntity<StatusReponseDto>(HttpStatus.BAD_REQUEST);}
     }
     //post
-    @Tag(name = "Метод контроллера для создания статуса", description = "Позволяет создать статус")
-    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
-        public ResponseEntity<Status> saveStatus(@RequestBody @Validated Status status){
-        if(status == null){
-            return new ResponseEntity<Status>(HttpStatus.BAD_REQUEST);
-        }
-        this.statusService.save(status);
-        return new ResponseEntity<Status>(status, HttpStatus.CREATED);
+    @Operation(description = "Позволяет создать статус пользователя")
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StatusReponseDto> saveStatus(@RequestBody StatusRequestDto statusRequestDto){
+        StatusReponseDto statusReponseDto = statusService.save(statusRequestDto);
+        return ResponseEntity.ok().body(statusReponseDto);
     }
     //delete
-    @Tag(name = "Метод контроллера для удаления статуса", description = "Позволяет удалить по id статус")
-    @DeleteMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Status> deleteStatus(@PathVariable("id") Long id){
-        Status status = this.statusService.getById(id);
-        if(status == null){
-            return new ResponseEntity<Status>(HttpStatus.NOT_FOUND);
+    @Operation(description = "Позволяет удалить по id статус пользователя")
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StatusReponseDto> deleteStatus(@PathVariable (required = false) Long statusId,
+                                                      @RequestBody StatusRequestDto statusRequestDto){
+        StatusReponseDto statusReponseDto = this.statusService.getById(statusId);
+        if(statusReponseDto != null){
+            this.statusService.delete(statusId);
+            return ResponseEntity.ok().build();
         }
-        this.statusService.delete(id);
-        return new ResponseEntity<Status>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<StatusReponseDto>(HttpStatus.NOT_FOUND);
+    }
+    //update
+    @Operation(description = "Позволяет обновить по id статус пользователя")
+    @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StatusReponseDto> updateStatus(@PathVariable (required = false) Long statusId,
+                                                      @RequestBody StatusRequestDto statusRequestDto){
+
+        if(statusId != null){
+            StatusReponseDto statusReponseDto = statusService.save(statusRequestDto);
+            return ResponseEntity.ok().body(statusReponseDto);
+        }
+        return new ResponseEntity<StatusReponseDto>(HttpStatus.NOT_FOUND);
+    }
+
+    //get all
+    @Operation(description = "Позволяет получить список всех статусов пользователей")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<StatusReponseDto>> getAllStatuses () {
+        List<StatusReponseDto> statusReponseDtoList = statusService.getAll();
+        if (statusReponseDtoList.isEmpty()) {return new ResponseEntity<List<StatusReponseDto>>(HttpStatus.NOT_FOUND);}
+        return ResponseEntity.ok().body(statusReponseDtoList);
+
     }
 }
