@@ -2,6 +2,8 @@ create table projects (
 projectId Long not nul auto_increment,
 name varchar(255) not null,
 isPaid boolean,
+userId Long,
+statusId Long,
 primary key (project ID)
 ) engine=InnoDB
 GO
