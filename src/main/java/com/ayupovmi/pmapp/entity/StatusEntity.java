@@ -10,7 +10,7 @@ public class StatusEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long statusId;
 
-    @Column
+    @Column (unique = true, nullable = false)
     private String name;
 
 

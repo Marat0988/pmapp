@@ -10,7 +10,7 @@ public class TaskTypeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskTypeId;
 
-    @Column
+    @Column (unique = true, nullable = false)
     private String name;
 
     public TaskTypeEntity(){}

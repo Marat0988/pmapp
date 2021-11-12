@@ -9,18 +9,17 @@ public class UserEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
-    @Column
+    @Column (nullable = false)
     private String name;
-    @Column(name = "lastName")
+    @Column(name = "lastName", nullable = false)
     private String lastName;
-
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
-    @Column(name = "email")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
     @OneToMany (targetEntity = RoleEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn (name = "roleId", referencedColumnName = "roleId")
+    @JoinColumn (name = "roleId")
     private List<RoleEntity> roleEntityList;
 
     public UserEntity(){}
