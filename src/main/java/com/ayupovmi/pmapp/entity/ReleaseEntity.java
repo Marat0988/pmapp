@@ -17,6 +17,7 @@ public class ReleaseEntity {
     @Column(name = "endDate")
     private LocalDateTime endDate;
 
+
     public ReleaseEntity(){}
 
     public ReleaseEntity(Long releaseId, LocalDateTime endDate, LocalDateTime startDate) {
