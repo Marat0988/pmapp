@@ -16,9 +16,9 @@ public class TaskEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long taskId;
 
-    @Column
+    @Column (unique = true, nullable = false)
     private String name;
-    @Column(name = "description")
+    @Column(name = "description", nullable = false)
     private String description;
     @Column(name = "submissionDate")
     private LocalDateTime submissionDate;
@@ -26,24 +26,26 @@ public class TaskEntity {
     private LocalDateTime startDate;
 
     @OneToMany (targetEntity = StatusEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn (name = "statusId", referencedColumnName = "statusId")
-    private List<StatusEntity> statusEntityList;
+    @JoinColumn (name = "statusId")
+    private StatusEntity statusEntity;
 
-    @OneToMany (targetEntity = UserEntity.class)
-    @JoinColumn (name = "userId", referencedColumnName = "userId")
+    @OneToOne (targetEntity = UserEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn (name = "userId")
     private UserEntity userEntity;
 
-    @OneToMany  (targetEntity = ProjectEntity.class)
-    @JoinColumn (name = "projectId", referencedColumnName = "projectId")
+    @OneToMany  (targetEntity = ProjectEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn (name = "projectId")
     private ProjectEntity projectEntity;
 
-    @OneToMany  (targetEntity = ReleaseEntity.class)
-    @JoinColumn (name = "releaseId", referencedColumnName = "releaseId")
+    @OneToMany  (targetEntity = ReleaseEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn (name = "releaseId")
     private ReleaseEntity releaseEntity;
+    //private ReleaseEntity releaseEntity;
 
-    @OneToMany (targetEntity = TaskTypeEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn (name = "taskTypeId", referencedColumnName = "taskTypeId")
-    private List<TaskTypeEntity> taskTypeEntityList;
+    @OneToOne (targetEntity = TaskTypeEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn (name = "taskTypeId")
+    //private List<TaskTypeEntity>  TaskTypeEntityList;
+    private TaskTypeEntity taskTypeEntity;
 
 
     public TaskEntity(){}
@@ -90,5 +92,23 @@ public class TaskEntity {
         this.description = description;
     }
 
+    public UserEntity getUserEntity() {return userEntity; }
 
+    public void setUserEntity(UserEntity userEntity) {this.userEntity = userEntity;}
+
+    public StatusEntity getStatusEntity() {return statusEntity;}
+
+    public void setStatusEntity(StatusEntity statusEntity) {this.statusEntity = statusEntity;}
+
+    public ReleaseEntity getReleaseEntity() {return releaseEntity;}
+
+    public void setReleaseEntity(ReleaseEntity releaseEntity) {this.releaseEntity = releaseEntity;}
+
+    public TaskTypeEntity getTaskTypeEntity() {return taskTypeEntity;}
+
+    public void setTaskTypeEntity(TaskTypeEntity taskTypeEntity) {this.taskTypeEntity = taskTypeEntity;}
+
+    public ProjectEntity getProjectEntity() {return projectEntity;}
+
+    public void setProjectEntity(ProjectEntity projectEntity) {this.projectEntity = projectEntity;}
 }

@@ -11,19 +11,19 @@ public class ProjectEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long projectId;
 
-    @Column
+    @Column (unique = true, nullable = false)
     private String name;
 
     @Column (name = "isPaid")
     private Boolean isPaid;
 
     @OneToMany (targetEntity = StatusEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn (name = "statusId", referencedColumnName = "statusId")
+    @JoinColumn (name = "statusId")
     private List<StatusEntity> statusEntityList;
 
-    @OneToMany (targetEntity = UserEntity.class)
-    @JoinColumn (name = "userId", referencedColumnName = "userId")
-    private UserEntity userEntity;
+    @OneToMany (targetEntity = UserEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn (name = "userId")
+    private List<UserEntity> userEntityList;
 
     public ProjectEntity () {}
 
