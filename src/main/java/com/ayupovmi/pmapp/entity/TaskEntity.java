@@ -27,25 +27,25 @@ public class TaskEntity {
 
     @OneToMany (targetEntity = StatusEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn (name = "statusId")
-    private List<StatusEntity> statusEntityList;
+    private StatusEntity statusEntity;
 
-    @OneToMany (targetEntity = UserEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne (targetEntity = UserEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn (name = "userId")
-    private List<UserEntity> userEntityList;
+    private UserEntity userEntity;
 
     @OneToMany  (targetEntity = ProjectEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn (name = "projectId")
-    private List<ProjectEntity> projectEntityList;
+    private ProjectEntity projectEntity;
 
     @OneToMany  (targetEntity = ReleaseEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn (name = "releaseId")
-    private List<ReleaseEntity> releaseEntityList;
+    private ReleaseEntity releaseEntity;
     //private ReleaseEntity releaseEntity;
 
-    @OneToMany (targetEntity = TaskTypeEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToOne (targetEntity = TaskTypeEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn (name = "taskTypeId")
-    private List<TaskTypeEntity>  TaskTypeEntityList;
-    //private TaskTypeEntity taskTypeEntity;
+    //private List<TaskTypeEntity>  TaskTypeEntityList;
+    private TaskTypeEntity taskTypeEntity;
 
 
     public TaskEntity(){}
@@ -92,5 +92,23 @@ public class TaskEntity {
         this.description = description;
     }
 
+    public UserEntity getUserEntity() {return userEntity; }
 
+    public void setUserEntity(UserEntity userEntity) {this.userEntity = userEntity;}
+
+    public StatusEntity getStatusEntity() {return statusEntity;}
+
+    public void setStatusEntity(StatusEntity statusEntity) {this.statusEntity = statusEntity;}
+
+    public ReleaseEntity getReleaseEntity() {return releaseEntity;}
+
+    public void setReleaseEntity(ReleaseEntity releaseEntity) {this.releaseEntity = releaseEntity;}
+
+    public TaskTypeEntity getTaskTypeEntity() {return taskTypeEntity;}
+
+    public void setTaskTypeEntity(TaskTypeEntity taskTypeEntity) {this.taskTypeEntity = taskTypeEntity;}
+
+    public ProjectEntity getProjectEntity() {return projectEntity;}
+
+    public void setProjectEntity(ProjectEntity projectEntity) {this.projectEntity = projectEntity;}
 }
