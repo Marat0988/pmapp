@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,7 @@ public class RoleController {
     //get
     @Operation(description = "Позволяет получить по id роль пользователя")
     @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<RoleResponseDto> getRole(@PathVariable (required = false) Long roleId,
                                                    @RequestBody RoleRequestDto roleRequestDto){
         if(roleId != null){
@@ -33,6 +35,7 @@ public class RoleController {
     //post
     @Operation(description = "Позволяет создать роль пользователя")
     @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<RoleResponseDto> saveRole(@RequestBody RoleRequestDto roleRequestDto){
         RoleResponseDto roleResponseDto = roleService.save(roleRequestDto);
         return ResponseEntity.ok().body(roleResponseDto);
@@ -40,6 +43,7 @@ public class RoleController {
     //delete
     @Operation(description = "Позволяет удалить по id роль пользователя")
     @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<RoleResponseDto> deleteRole(@PathVariable (required = false) Long roleId,
                                                       @RequestBody RoleRequestDto roleRequestDto){
         RoleResponseDto roleResponseDto = this.roleService.getById(roleId);
@@ -52,6 +56,7 @@ public class RoleController {
     //update
     @Operation(description = "Позволяет обновить по id роль пользователя")
     @PutMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<RoleResponseDto> updateRole(@PathVariable (required = false) Long roleId,
                                                       @RequestBody RoleRequestDto roleRequestDto){
 
@@ -65,6 +70,7 @@ public class RoleController {
     //get all
     @Operation(description = "Позволяет получить список всех ролей пользователей")
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<List<RoleResponseDto>> getAllRoles () {
         List<RoleResponseDto> roleResponseDtoList = roleService.getAll();
         if (roleResponseDtoList.isEmpty()) {return new ResponseEntity<List<RoleResponseDto>>(HttpStatus.NOT_FOUND);}

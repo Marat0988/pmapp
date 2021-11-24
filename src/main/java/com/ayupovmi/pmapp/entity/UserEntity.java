@@ -17,12 +17,20 @@ public class UserEntity {
     private String password;
     @Column(name = "email", unique = true, nullable = false)
     private String email;
+    @Enumerated(value=EnumType.STRING)
+    @Column(name = "roleForSecurity")
+    private RoleForSecurity roleForSecurity;
+    @Enumerated(value=EnumType.STRING)
+    @Column(name = "statusForSecurity")
+    private StatusForSecurity statusForSecurity;
 
     @OneToMany (targetEntity = RoleEntity.class,  fetch =  FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn (name = "roleId")
     private List<RoleEntity> roleEntityList;
 
     public UserEntity(){}
+
+
 
     public UserEntity(Long id, String name, String lastName, String password, String email) {
         this.userId = id;
@@ -67,4 +75,12 @@ public class UserEntity {
     public void setEmail(String email) {
         this.email = email;
     }
+
+
+    public RoleForSecurity getRoleForSecurity() {return roleForSecurity;}
+    public void setRoleForSecurity(RoleForSecurity roleForSecurity) {this.roleForSecurity = roleForSecurity;}
+
+    public StatusForSecurity getStatusForSecurity() {return statusForSecurity;}
+
+    public void setStatusForSecurity(StatusForSecurity statusForSecurity) {this.statusForSecurity = statusForSecurity;}
 }
